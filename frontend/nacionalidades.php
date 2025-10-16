@@ -38,8 +38,8 @@
             <?php else: ?>
                 <?php foreach ($nacionalidades as $nacionalidade): ?>
                     <tr>
-                        <th scope="row"><?php echo htmlspecialchars($nacionalidade['id_nacionalidade']); ?></th>
-                        <td><?php echo htmlspecialchars($nacionalidade['nome']); ?></td>
+                        <th scope="row"><?php echo htmlspecialchars($nacionalidade['id_Nacionalidades']); ?></th>
+                        <td><?php echo htmlspecialchars($nacionalidade['nacionalidade']); ?></td>
                         <td>
                             <button class="btn btn-warning btn-sm">Editar</button>
                             <button class="btn btn-danger btn-sm">Excluir</button>

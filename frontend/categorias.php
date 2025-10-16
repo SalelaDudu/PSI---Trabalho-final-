@@ -4,7 +4,7 @@
 
     // Busca todas as categorias existentes para listar na tabela
     $categorias = [];
-    $sql = "SELECT id_Categoria, categoria FROM Categorias ORDER BY categoria ASC";
+    $sql = "SELECT id_Categorias, categoria FROM Categorias ORDER BY categoria ASC";
     $resultado = $conn->query($sql);
     if ($resultado->num_rows > 0) {
         $categorias = $resultado->fetch_all(MYSQLI_ASSOC);
@@ -38,7 +38,7 @@
             <?php else: ?>
                 <?php foreach ($categorias as $categoria): ?>
                     <tr>
-                        <th scope="row"><?php echo htmlspecialchars($categoria['id_Categoria']); ?></th>
+                        <th scope="row"><?php echo htmlspecialchars($categoria['id_Categorias']); ?></th>
                         <td><?php echo htmlspecialchars($categoria['categoria']); ?></td>
                         <td>
                             <button class="btn btn-warning btn-sm">Editar</button>

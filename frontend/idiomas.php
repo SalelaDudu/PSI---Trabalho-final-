@@ -4,7 +4,7 @@
 
     // Busca todos os idiomas existentes para listar na tabela
     $idiomas = [];
-    $sql = "SELECT id_Idioma, idioma FROM Idiomas ORDER BY idioma ASC";
+    $sql = "SELECT id_Idiomas, idioma FROM Idiomas ORDER BY idioma ASC";
     $resultado = $conn->query($sql);
     if ($resultado->num_rows > 0) {
         $idiomas = $resultado->fetch_all(MYSQLI_ASSOC);
@@ -38,7 +38,7 @@
             <?php else: ?>
                 <?php foreach ($idiomas as $idioma): ?>
                     <tr>
-                        <th scope="row"><?php echo htmlspecialchars($idioma['id_Idioma']); ?></th>
+                        <th scope="row"><?php echo htmlspecialchars($idioma['id_Idiomas']); ?></th>
                         <td><?php echo htmlspecialchars($idioma['idioma']); ?></td>
                         <td>
                             <button class="btn btn-warning btn-sm">Editar</button>
