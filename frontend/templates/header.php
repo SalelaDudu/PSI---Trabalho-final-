@@ -40,9 +40,9 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                             Cadastrar
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Categorias</a></li>
-                            <li><a class="dropdown-item" href="#">Idiomas</a></li>
-                            <li><a class="dropdown-item" href="#">Nacionalidades</a></li>
+                            <li><a class="dropdown-item" href="/frontend/categorias.php">Categorias</a></li>
+                            <li><a class="dropdown-item" href="/frontend/idiomas.php">Idiomas</a></li>
+                            <li><a class="dropdown-item" href="/frontend/nacionalidades.php">Nacionalidades</a></li>
                         </ul>
                     </li>
                 </ul>

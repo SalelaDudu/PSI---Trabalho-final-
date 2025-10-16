@@ -76,18 +76,18 @@
                     </div>
                     
                     <div class="mb-3">
-                        [cite_start]<label for="descricao" class="form-label">Descrição</label> [cite: 28]
+                        <label for="descricao" class="form-label">Descrição</label>
                         <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            [cite_start]<label for="ano_lancamento" class="form-label">Ano de Lançamento</label> [cite: 28]
+                            <label for="ano_lancamento" class="form-label">Ano de Lançamento</label>
                             <input type="number" class="form-control" id="ano_lancamento" name="ano_lancamento" min="1888" max="<?php echo date('Y') + 1; ?>" required>
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            [cite_start]<label for="classificacao" class="form-label">Classificação Indicativa</label> [cite: 28]
+                            <label for="classificacao" class="form-label">Classificação Indicativa</label>
                             <select class="form-select" id="classificacao" name="classificacao" required>
                                 <option value="L">L - Livre</option>
                                 <option value="10">10 anos</option>
@@ -99,7 +99,7 @@
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            [cite_start]<label for="categoria" class="form-label">Categoria</label> [cite: 28]
+                            <label for="categoria" class="form-label">Categoria</label>
                             <select class="form-select" id="categoria" name="id_categoria" required>
                                 <option value="1">Ficção Científica</option>
                                 <option value="2">Drama</option>
@@ -110,14 +110,14 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            [cite_start]<label for="idioma" class="form-label">Idioma</label> [cite: 28]
+                            <label for="idioma" class="form-label">Idioma</label>
                             <select class="form-select" id="idioma" name="id_idioma" required>
                                 <option value="1">Inglês</option>
                                 <option value="2">Português</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            [cite_start]<label for="nacionalidade" class="form-label">Nacionalidade (Opcional)</label> [cite: 29]
+                            <label for="nacionalidade" class="form-label">Nacionalidade (Opcional)</label> 
                             <select class="form-select" id="nacionalidade" name="id_nacionalidade">
                                 <option value="">Selecione...</option>
                                 <option value="1">Americana</option>
