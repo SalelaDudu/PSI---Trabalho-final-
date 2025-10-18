@@ -1,8 +1,6 @@
 <?php 
-    // Define o título desta página específica
     $pageTitle = 'Gerenciar Atores'; 
     
-    // Inclui o cabeçalho (início do nosso template)
     require_once './templates/header.php'; 
 ?>
 
@@ -114,6 +112,5 @@
     </div>
 </div>
 <?php 
-    // Inclui o rodapé (fim do nosso template)
     require_once './templates/footer.php'; 
 ?>

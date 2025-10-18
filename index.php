@@ -1,8 +1,6 @@
 <?php 
-    // Define o título desta página específica
     $pageTitle = 'Página Inicial'; 
     
-    // Inclui o cabeçalho (início do nosso template)
     require_once './frontend/templates/header.php'; 
 ?>
 
@@ -38,6 +36,5 @@
     </div>
 </div>
 <?php 
-    // Inclui o rodapé (fim do nosso template)
     require_once './frontend/templates/footer.php'; 
 ?>

@@ -2,7 +2,6 @@
     $pageTitle = 'Gerenciar Nacionalidades';
     require_once '../backend/conexao.php';
 
-    // Busca todas as nacionalidades existentes para listar na tabela
     $nacionalidades = [];
     $sql = "SELECT id_Nacionalidades, nacionalidade FROM Nacionalidades ORDER BY nacionalidade ASC";
     $resultado = $conn->query($sql);
@@ -31,22 +30,26 @@
             </tr>
         </thead>
         <tbody>
-            <?php if (empty($nacionalidades)): ?>
+            <?php foreach ($nacionalidades as $nacionalidade): ?>
                 <tr>
-                    <td colspan="3" class="text-center">Nenhuma nacionalidade encontrada.</td>
+                    <th scope="row"><?php echo htmlspecialchars($nacionalidade['id_Nacionalidades']); ?></th>
+                    <td><?php echo htmlspecialchars($nacionalidade['nacionalidade']); ?></td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editNacionalidadeModal"
+                                data-nacionalidade-id="<?php echo $nacionalidade['id_Nacionalidades']; ?>"
+                                data-nacionalidade-nome="<?php echo htmlspecialchars($nacionalidade['nacionalidade']); ?>">
+                            Editar
+                        </button>
+                        <a href="/backend/deletar_nacionalidade.php?id=<?php echo $nacionalidade['id_Nacionalidades']; ?>" 
+                           class="btn btn-danger btn-sm" 
+                           onclick="return confirm('Atenção! Excluir uma nacionalidade pode causar erros se ela estiver sendo usada. Deseja continuar?');">
+                           Excluir
+                        </a>
+                    </td>
                 </tr>
-            <?php else: ?>
-                <?php foreach ($nacionalidades as $nacionalidade): ?>
-                    <tr>
-                        <th scope="row"><?php echo htmlspecialchars($nacionalidade['id_Nacionalidades']); ?></th>
-                        <td><?php echo htmlspecialchars($nacionalidade['nacionalidade']); ?></td>
-                        <td>
-                            <button class="btn btn-warning btn-sm">Editar</button>
-                            <button class="btn btn-danger btn-sm">Excluir</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php endforeach; ?>
         </tbody>
     </table>
 </div>
@@ -74,4 +77,47 @@
     </div>
 </div>
 
+<div class="modal fade" id="editNacionalidadeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNacionalidadeModalLabel">Editar Nacionalidade</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/backend/editar_nacionalidade.php" method="POST">
+                    <input type="hidden" name="id_nacionalidade" id="edit_nacionalidade_id">
+                    <div class="mb-3">
+                        <label for="edit_nome" class="form-label">Nome da Nacionalidade</label>
+                        <input type="text" class="form-control" id="edit_nome" name="nome" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php require_once './templates/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var editNacionalidadeModal = document.getElementById('editNacionalidadeModal');
+    editNacionalidadeModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var nacionalidadeId = button.getAttribute('data-nacionalidade-id');
+        var nacionalidadeNome = button.getAttribute('data-nacionalidade-nome');
+
+        var modalTitle = editNacionalidadeModal.querySelector('.modal-title');
+        var modalInputId = document.getElementById('edit_nacionalidade_id');
+        var modalInputNome = document.getElementById('edit_nome');
+
+        modalTitle.textContent = 'Editar Nacionalidade: ' + nacionalidadeNome;
+        modalInputId.value = nacionalidadeId;
+        modalInputNome.value = nacionalidadeNome;
+    });
+});
+</script>
