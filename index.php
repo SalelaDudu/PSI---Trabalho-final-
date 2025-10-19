@@ -11,7 +11,7 @@
             O seu portal para gerenciar informações sobre filmes, atores, categorias e muito mais.
             Utilize a barra de navegação acima para começar.
         </p>
-        <a href="filmes.php" class="btn btn-primary btn-lg" type="button">Ver Filmes</a>
+        <a href="/frontend/filmes.php" class="btn btn-primary btn-lg" type="button">Ver Filmes</a>
     </div>
 </div>
 
@@ -21,16 +21,15 @@
             <div class="card-body">
                 <h5 class="card-title">Gerenciar Atores</h5>
                 <p class="card-text">Adicione, edite e visualize os atores do seu banco de dados.</p>
-                <a href="atores.php" class="btn btn-secondary">Ir para Atores</a>
+                <a href="/frontend/atores.php" class="btn btn-secondary">Ir para Atores</a>
             </div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Gerenciar Cadastros</h5>
-                <p class="card-text">Administre as categorias, idiomas e nacionalidades do sistema.</p>
-                <a href="#" class="btn btn-secondary">Ir para Cadastros</a>
+                <h5 class="card-title">Atualizações em breve</h5>
+                <p class="card-text">Aguarde nossas novidades!</p>
             </div>
         </div>
     </div>
