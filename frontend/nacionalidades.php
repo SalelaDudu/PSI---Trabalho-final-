@@ -8,9 +8,7 @@
     if ($resultado->num_rows > 0) {
         $nacionalidades = $resultado->fetch_all(MYSQLI_ASSOC);
     }
-    $conn->close();
-
-    require_once './templates/header.php';
+    include_once './templates/header.php';
 ?>
 
 <div class="container">

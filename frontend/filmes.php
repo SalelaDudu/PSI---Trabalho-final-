@@ -1,100 +1,180 @@
-<?php 
-    $pageTitle = 'Gerenciar Filmes'; 
-    require_once '../backend/conexao.php';
+<?php
+$pageTitle = 'Gerenciar Filmes';
+require_once '../backend/conexao.php';
 
-    $filmes = [];
-    $categorias = [];
-    $idiomas = [];
-    $nacionalidades = [];
 
-    // Qpega info dos filmes pra editar 
-    $sql_filmes = "SELECT 
-                        f.id_Filmes, f.titulo, f.descricao, f.ano, f.classificacao, 
-                        f.Categorias_idCategorias, f.Nacionalidade_id_Nacionalidades,
-                        c.categoria AS nome_categoria,
-                        i.id_idiomas AS id_idioma
-                   FROM Filmes AS f
-                   LEFT JOIN Categorias AS c ON f.Categorias_idCategorias = c.id_Categorias
-                   LEFT JOIN Filmes_has_idioma AS fhi ON f.id_Filmes = fhi.Filmes_id_Filmes
-                   LEFT JOIN idiomas AS i ON fhi.idiomas_id_idiomas = i.id_idiomas
-                   ORDER BY f.titulo ASC";
-    $resultado_filmes = $conn->query($sql_filmes);
-    if ($resultado_filmes) {
-        $filmes = $resultado_filmes->fetch_all(MYSQLI_ASSOC);
-    }
+$filmes = [];
+$categorias = [];
+$idiomas = [];
+$nacionalidades = [];
+$atores = [];
+$atores_filme = [];;
 
-    // cata os dado pra tabela
-    $sql_categorias = "SELECT id_Categorias, categoria FROM Categorias ORDER BY categoria ASC";
-    $resultado_categorias = $conn->query($sql_categorias);
-    if ($resultado_categorias) $categorias = $resultado_categorias->fetch_all(MYSQLI_ASSOC);
 
-    $sql_idiomas = "SELECT id_idiomas, idioma FROM idiomas ORDER BY idioma ASC";
-    $resultado_idiomas = $conn->query($sql_idiomas);
-    if ($resultado_idiomas) $idiomas = $resultado_idiomas->fetch_all(MYSQLI_ASSOC);
+// pega o id do filme via get
+$id_filme = isset($_GET['id_filme']) ? intval($_GET['id_filme']) : 0;
 
-    $sql_nacionalidades = "SELECT id_Nacionalidades, nacionalidade FROM Nacionalidades ORDER BY nacionalidade ASC";
-    $resultado_nacionalidades = $conn->query($sql_nacionalidades);
-    if ($resultado_nacionalidades) $nacionalidades = $resultado_nacionalidades->fetch_all(MYSQLI_ASSOC);
-    
-    $conn->close();
-    require_once './templates/header.php'; 
+// ==================== CONSULTAS ====================
+
+// Filmes
+$sql_filmes = "SELECT 
+    f.id_Filmes, f.titulo, f.descricao, f.ano, f.classificacao, 
+    f.Categorias_idCategorias, f.Nacionalidade_id_Nacionalidades,
+    c.categoria AS nome_categoria,
+    i.id_idiomas AS id_idioma
+FROM Filmes AS f
+LEFT JOIN Categorias AS c ON f.Categorias_idCategorias = c.id_Categorias
+LEFT JOIN Filmes_has_idioma AS fhi ON f.id_Filmes = fhi.Filmes_id_Filmes
+LEFT JOIN idiomas AS i ON fhi.idiomas_id_idiomas = i.id_idiomas
+ORDER BY f.titulo ASC";
+$filmes = $conn->query($sql_filmes)->fetch_all(MYSQLI_ASSOC);
+
+// Categorias
+$categorias = $conn->query("SELECT id_Categorias, categoria FROM Categorias ORDER BY categoria ASC")->fetch_all(MYSQLI_ASSOC);
+
+// Idiomas
+$idiomas = $conn->query("SELECT id_idiomas, idioma FROM idiomas ORDER BY idioma ASC")->fetch_all(MYSQLI_ASSOC);
+
+// Nacionalidades
+$nacionalidades = $conn->query("SELECT id_Nacionalidades, nacionalidade FROM Nacionalidades ORDER BY nacionalidade ASC")->fetch_all(MYSQLI_ASSOC);
+
+// Atores
+$atores = $conn->query("SELECT id_Atores, nome FROM Atores ORDER BY nome ASC")->fetch_all(MYSQLI_ASSOC);
+
+// Atores do filme
+if ($id_filme > 0) {
+    $sql_atores_filme = "
+        SELECT a.id_Atores, a.nome 
+        FROM filmes_has_atores fa
+        JOIN Atores a ON fa.atores_id_atores = a.id_Atores
+        WHERE fa.filmes_id_filmes = $id_filme
+    ";
+    $resultado_atores_filme = $conn->query($sql_atores_filme);
+    if ($resultado_atores_filme)
+        $atores_filme = $resultado_atores_filme->fetch_all(MYSQLI_ASSOC);
+}
+
+$conn->close();
+require_once './templates/header.php';
 ?>
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Gerenciar Filmes</h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
-            Adicionar Novo Filme
-        </button>
-    </div>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Gerenciar Filmes</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
+      Adicionar Novo Filme
+    </button>
+  </div>
 
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Título</th>
-                <th scope="col">Ano</th>
-                <th scope="col">Categoria</th>
-                <th scope="col">Classificação</th>
-                <th scope="col" style="width: 20%;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($filmes as $filme): ?>
-                <tr>
-                    <th scope="row"><?php echo $filme['id_Filmes']; ?></th>
-                    <td><?php echo htmlspecialchars($filme['titulo']); ?></td>
-                    <td><?php echo htmlspecialchars($filme['ano']); ?></td>
-                    <td><?php echo htmlspecialchars($filme['nome_categoria']); ?></td>
-                    <td><?php echo htmlspecialchars($filme['classificacao']); ?></td>
-                    <td>
-                        <a href="filme_atores.php?id=<?php echo $filme['id_Filmes']; ?>" class="btn btn-info btn-sm">Atores</a>
-                        
-                        <button type="button" class="btn btn-warning btn-sm" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editMovieModal"
-                                data-filme-id="<?php echo $filme['id_Filmes']; ?>"
-                                data-filme-titulo="<?php echo htmlspecialchars($filme['titulo']); ?>"
-                                data-filme-descricao="<?php echo htmlspecialchars($filme['descricao']); ?>"
-                                data-filme-ano="<?php echo $filme['ano']; ?>"
-                                data-filme-classificacao="<?php echo $filme['classificacao']; ?>"
-                                data-filme-categoria-id="<?php echo $filme['Categorias_idCategorias']; ?>"
-                                data-filme-idioma-id="<?php echo $filme['id_idioma']; ?>"
-                                data-filme-nacionalidade-id="<?php echo $filme['Nacionalidade_id_Nacionalidades']; ?>">
-                            Editar
-                        </button>
-                        <a href="/backend/excluir_filme.php?id=<?php echo $filme['id_Filmes']; ?>" 
-                           class="btn btn-danger btn-sm" 
-                           onclick="return confirm('Tem certeza que deseja excluir este filme?');">
-                           Excluir
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+  <table id="tabelaFilmes" class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Ano</th>
+        <th>Categoria</th>
+        <th>Classificação</th>
+        <th style="width: 20%;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($filmes as $filme): ?>
+        <tr>
+          <th scope="row"><?= $filme['id_Filmes']; ?></th>
+          <td><?= htmlspecialchars($filme['titulo']); ?></td>
+          <td><?= htmlspecialchars($filme['ano']); ?></td>
+          <td><?= htmlspecialchars($filme['nome_categoria']); ?></td>
+          <td><?= htmlspecialchars($filme['classificacao']); ?></td>
+          <td>
+            <a href="?id_filme=<?= $filme['id_Filmes']; ?>" class="btn btn-secondary btn-sm">
+              Atores
+            </a>
+
+            <button type="button" class="btn btn-warning btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#editMovieModal"
+              data-filme-id="<?= $filme['id_Filmes']; ?>"
+              data-filme-titulo="<?= htmlspecialchars($filme['titulo']); ?>"
+              data-filme-descricao="<?= htmlspecialchars($filme['descricao']); ?>"
+              data-filme-ano="<?= $filme['ano']; ?>"
+              data-filme-classificacao="<?= $filme['classificacao']; ?>"
+              data-filme-categoria-id="<?= $filme['Categorias_idCategorias']; ?>"
+              data-filme-idioma-id="<?= $filme['id_idioma']; ?>"
+              data-filme-nacionalidade-id="<?= $filme['Nacionalidade_id_Nacionalidades']; ?>">
+              Editar
+            </button>
+
+            <a href="/backend/deletar_filme.php?id=<?= $filme['id_Filmes']; ?>"
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Tem certeza que deseja excluir este filme?');">
+              Excluir
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
 </div>
 
+
+<!-- MODAL: Atores do Filme -->
+<div class="modal fade" id="atoresFilmesModal" tabindex="-1" aria-labelledby="atoresFilmesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-3">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="atoresFilmesModalLabel">🎬 Atores do Filme</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body bg-light">
+        <?php if ($id_filme > 0): ?>
+        <!-- Formulário de vincular ator -->
+        <form action="/backend/cadastrar_ator_filme.php" method="POST" class="mb-4">
+            <input type="hidden" name="id_filme" value="<?= $id_filme; ?>">
+
+            <div class="mb-3 d-flex align-items-end gap-2">
+                <div class="flex-grow-1">
+                    <label for="id_ator" class="form-label fw-semibold">Selecione um ator</label>
+                    <select name="id_ator" id="id_ator" class="form-select" required>
+                        <option value="">Selecione um ator</option>
+                        <?php foreach ($atores as $ator): ?>
+                            <option value="<?= $ator['id_Atores']; ?>">
+                                <?= htmlspecialchars($ator['nome']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn btn-success px-3" type="submit">➕ Vincular</button>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+        <h6 class="fw-bold mb-3">Atores já vinculados:</h6>
+
+        <?php if (!empty($atores_filme)): ?>
+            <ul class="list-group list-group-flush shadow-sm rounded">
+                <?php foreach ($atores_filme as $ator_filme): ?>
+                    <li class="list-group-item">
+                        🎭 <?= htmlspecialchars($ator_filme['nome']); ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <div class="alert alert-warning text-center">
+                Nenhum ator vinculado a este filme.
+            </div>
+        <?php endif; ?>
+        <?php else: ?>
+            <p class="text-center text-muted">Selecione um filme para ver seus atores.</p>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal adicionar filmes-->
 <div class="modal fade" id="addMovieModal" tabindex="-1" aria-labelledby="addMovieModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -175,9 +255,9 @@
             </div>
         </div>
     </div>
-
-
-    <div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
+</div>
+<!--Modal editar filmes-->
+<div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -250,36 +330,15 @@
     </div>
 </div>
 
+
+
 <?php require_once './templates/footer.php'; ?>
 
+<?php if ($id_filme): ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var editMovieModal = document.getElementById('editMovieModal');
-        editMovieModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-
-            // Extrai as informações dos atributos
-            var filmeId = button.getAttribute('data-filme-id');
-            var titulo = button.getAttribute('data-filme-titulo');
-            var descricao = button.getAttribute('data-filme-descricao');
-            var ano = button.getAttribute('data-filme-ano');
-            var classificacao = button.getAttribute('data-filme-classificacao');
-            var categoriaId = button.getAttribute('data-filme-categoria-id');
-            var idiomaId = button.getAttribute('data-filme-idioma-id');
-            var nacionalidadeId = button.getAttribute('data-filme-nacionalidade-id');
-
-            // Atualiza os campos do modal
-            var modalTitle = editMovieModal.querySelector('.modal-title');
-            modalTitle.textContent = 'Editar Filme: ' + titulo;
-
-            document.getElementById('edit_filme_id').value = filmeId;
-            document.getElementById('edit_titulo').value = titulo;
-            document.getElementById('edit_descricao').value = descricao;
-            document.getElementById('edit_ano').value = ano;
-            document.getElementById('edit_classificacao').value = classificacao;
-            document.getElementById('edit_categoria').value = categoriaId;
-            document.getElementById('edit_idioma').value = idiomaId;
-            document.getElementById('edit_nacionalidade').value = nacionalidadeId;
-        });
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = new bootstrap.Modal(document.getElementById('atoresFilmesModal'));
+    modal.show();
+});
 </script>
+<?php endif; ?>

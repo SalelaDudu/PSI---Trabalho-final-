@@ -45,5 +45,5 @@ try {
 }
 
 // da close nos falsos aliados
-$conn->close();
+$conn->close(); 
 ?>
