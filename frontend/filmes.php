@@ -59,48 +59,63 @@ require_once './templates/header.php';
 ?>
 
 <div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Gerenciar Filmes</h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
-            Adicionar Novo Filme
-        </button>
-    </div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Gerenciar Filmes</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovieModal">
+      Adicionar Novo Filme
+    </button>
+  </div>
 
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Ano</th>
-                <th>Categoria</th>
-                <th>Classificação</th>
-                <th style="width: 20%;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($filmes as $filme): ?>
-                <tr>
-                    <th scope="row"><?= $filme['id_Filmes']; ?></th>
-                    <td><?= htmlspecialchars($filme['titulo']); ?></td>
-                    <td><?= htmlspecialchars($filme['ano']); ?></td>
-                    <td><?= htmlspecialchars($filme['nome_categoria']); ?></td>
-                    <td><?= htmlspecialchars($filme['classificacao']); ?></td>
-                    <td>
-                        <a href="?id_filme=<?= $filme['id_Filmes']; ?>" 
-                           class="btn btn-secondary btn-sm">
-                           Atores
-                        </a>
-                        <a href="/backend/excluir_filme.php?id=<?= $filme['id_Filmes']; ?>"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Tem certeza que deseja excluir este filme?');">
-                           Excluir
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+  <table id="tabelaFilmes" class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Ano</th>
+        <th>Categoria</th>
+        <th>Classificação</th>
+        <th style="width: 20%;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($filmes as $filme): ?>
+        <tr>
+          <th scope="row"><?= $filme['id_Filmes']; ?></th>
+          <td><?= htmlspecialchars($filme['titulo']); ?></td>
+          <td><?= htmlspecialchars($filme['ano']); ?></td>
+          <td><?= htmlspecialchars($filme['nome_categoria']); ?></td>
+          <td><?= htmlspecialchars($filme['classificacao']); ?></td>
+          <td>
+            <a href="?id_filme=<?= $filme['id_Filmes']; ?>" class="btn btn-secondary btn-sm">
+              Atores
+            </a>
+
+            <button type="button" class="btn btn-warning btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#editMovieModal"
+              data-filme-id="<?= $filme['id_Filmes']; ?>"
+              data-filme-titulo="<?= htmlspecialchars($filme['titulo']); ?>"
+              data-filme-descricao="<?= htmlspecialchars($filme['descricao']); ?>"
+              data-filme-ano="<?= $filme['ano']; ?>"
+              data-filme-classificacao="<?= $filme['classificacao']; ?>"
+              data-filme-categoria-id="<?= $filme['Categorias_idCategorias']; ?>"
+              data-filme-idioma-id="<?= $filme['id_idioma']; ?>"
+              data-filme-nacionalidade-id="<?= $filme['Nacionalidade_id_Nacionalidades']; ?>">
+              Editar
+            </button>
+
+            <a href="/backend/deletar_filme.php?id=<?= $filme['id_Filmes']; ?>"
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Tem certeza que deseja excluir este filme?');">
+              Excluir
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
 </div>
+
 
 <!-- MODAL: Atores do Filme -->
 <div class="modal fade" id="atoresFilmesModal" tabindex="-1" aria-labelledby="atoresFilmesModalLabel" aria-hidden="true">
@@ -240,6 +255,82 @@ require_once './templates/header.php';
             </div>
         </div>
     </div>
+</div>
+<!--Modal editar filmes-->
+<div class="modal fade" id="editMovieModal" tabindex="-1" aria-labelledby="editMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editMovieModalLabel">Editar Filme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/backend/editar_filmes.php" method="POST">
+                    <input type="hidden" name="id_filme" id="edit_filme_id">
+
+                    <div class="mb-3">
+                        <label for="edit_titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="edit_descricao" name="descricao" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_ano" class="form-label">Ano de Lançamento</label>
+                            <input type="number" class="form-control" id="edit_ano" name="ano" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_classificacao" class="form-label">Classificação Indicativa</label>
+                            <select class="form-select" id="edit_classificacao" name="classificacao" required>
+                                <option value="L">L - Livre</option>
+                                <option value="10">10 anos</option>
+                                <option value="12">12 anos</option>
+                                <option value="14">14 anos</option>
+                                <option value="16">16 anos</option>
+                                <option value="18">18 anos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_categoria" class="form-label">Categoria</label>
+                            <select class="form-select" id="edit_categoria" name="id_categoria" required>
+                                <?php foreach ($categorias as $categoria): ?>
+                                    <option value="<?php echo $categoria['id_Categorias']; ?>"><?php echo htmlspecialchars($categoria['categoria']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_idioma" class="form-label">Idioma</label>
+                            <select class="form-select" id="edit_idioma" name="id_idioma" required>
+                                <?php foreach ($idiomas as $idioma): ?>
+                                    <option value="<?php echo $idioma['id_idiomas']; ?>"><?php echo htmlspecialchars($idioma['idioma']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_nacionalidade" class="form-label">Nacionalidade (Opcional)</label>
+                            <select class="form-select" id="edit_nacionalidade" name="id_nacionalidade">
+                                <option value="">Selecione...</option>
+                                <?php foreach ($nacionalidades as $nacionalidade): ?>
+                                    <option value="<?php echo $nacionalidade['id_Nacionalidades']; ?>"><?php echo htmlspecialchars($nacionalidade['nacionalidade']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <?php require_once './templates/footer.php'; ?>
 
